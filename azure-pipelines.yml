@@ -6,7 +6,7 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'a67558be-804b-49b6-9b70-bcd668f23fef'
+  registryServiceConnection: 'acr-dtd'
   imageRepository: 'philips-api'
   containerRegistry: 'devtds.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
@@ -15,7 +15,7 @@ variables:
 
 stages:
 - stage: Build
-  displayName: Build and push stage
+  displayName: Build and push image
   jobs:
   - job: Build
     displayName: Build
@@ -27,6 +27,6 @@ stages:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
+        containerRegistry: $(registryServiceConnection)
         tags: |
           $(tag)
