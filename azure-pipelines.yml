@@ -30,3 +30,20 @@ stages:
         containerRegistry: $(registryServiceConnection)
         tags: |
           $(tag)
+- stage: Deploy
+  displayName: Deploy to local k8s cluster
+  jobs:
+    - job: Deploy
+      displayName: Deploy
+      pool: $(pool)
+      steps:
+      - task: HelmDeploy@0
+        displayName: "Helm Deploy"
+        inputs:
+          connectionType: Kubernetes Service Connection
+          kubernetesServiceEndpoint: local-k8s
+          command: upgrade
+          install: true
+          chartType: FilePath
+          chartPath: .chart
+          overrideValues: image.tag=$(tag)
