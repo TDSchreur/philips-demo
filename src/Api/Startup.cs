@@ -43,7 +43,7 @@ namespace Api
 
             app.Run(async context =>
             {
-                await context.Response.WriteAsync($"Demo: Hello World!!! Request parth: {context.Request.Path}");
+                await context.Response.WriteAsync($"Demo: Hello World!!! Request path: {context.Request.Path}");
             });
         }
     }
