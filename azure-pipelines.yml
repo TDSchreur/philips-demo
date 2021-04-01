@@ -11,7 +11,7 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'a67558be-804b-49b6-9b70-bcd668f23fef'
-  imageRepository: 'philipsapi'
+  imageRepository: 'philips-api'
   containerRegistry: 'devtds.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
