@@ -44,6 +44,7 @@ stages:
           kubernetesServiceEndpoint: local-k8s
           command: upgrade
           install: true
+          releaseName: philips-demo-deployment
           chartType: FilePath
           chartPath: .chart
           overrideValues: image.tag=$(tag)
