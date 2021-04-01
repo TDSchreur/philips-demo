@@ -42,63 +42,57 @@ namespace Api
             return new HostBuilder()
                   .UseContentRoot(Directory.GetCurrentDirectory())
                   .ConfigureAppConfiguration((context, builder) =>
-                  {
-                      var env = context.HostingEnvironment;
+                   {
+                       var env = context.HostingEnvironment;
 
-                      builder.AddJsonFile("appsettings.json", false, false)
-                             .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
-                             .AddEnvironmentVariables()
-                             .AddCommandLine(args);
+                       builder.AddJsonFile("appsettings.json", false, false)
+                              .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true)
+                              .AddEnvironmentVariables()
+                              .AddCommandLine(args);
 
-                      context.Configuration = builder.Build();
-                  })
+                       context.Configuration = builder.Build();
+                   })
                   .ConfigureLogging((context, builder) =>
-                  {
-                      builder.ClearProviders();
+                   {
+                       builder.ClearProviders();
 
-                      var loggerBuilder = new LoggerConfiguration()
-                                         .Enrich.FromLogContext()
-                                         .MinimumLevel.Information();
+                       var loggerBuilder = new LoggerConfiguration()
+                                          .Enrich.FromLogContext()
+                                          .MinimumLevel.Information();
 
-                      
-
-                      loggerBuilder.MinimumLevel.Debug()
+                       loggerBuilder.MinimumLevel.Debug()
                                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                                     .MinimumLevel.Override("System", LogEventLevel.Warning)
-                                   .WriteTo.Console(outputTemplate:
-                                                    "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
-                                                    theme: AnsiConsoleTheme.Literate)
-                                   ;
-                      //    }
+                                    .WriteTo.Console(outputTemplate:
+                                                     "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
+                                                     theme: AnsiConsoleTheme.Literate);
 
-                      builder.AddSerilog(loggerBuilder.CreateLogger());
-                  })
+                       builder.AddSerilog(loggerBuilder.CreateLogger());
+                   })
                   .UseDefaultServiceProvider((context, options) =>
-                  {
-                      var isDevelopment = context.HostingEnvironment.IsDevelopment();
-                      options.ValidateScopes = isDevelopment;
-                      options.ValidateOnBuild = isDevelopment;
-                  })
+                   {
+                       var isDevelopment = context.HostingEnvironment.IsDevelopment();
+                       options.ValidateScopes = isDevelopment;
+                       options.ValidateOnBuild = isDevelopment;
+                   })
                   .ConfigureServices((hostContext, services) =>
-                  {
-                      
-                      services.AddOptions();
-                      services.AddRouting();
-                      
-                  })
+                   {
+                       services.AddOptions();
+                       services.AddRouting();
+                   })
                   .ConfigureWebHost(builder =>
-                  {
-                      builder.ConfigureAppConfiguration((ctx, cb) =>
-                      {
-                          if (ctx.HostingEnvironment.IsDevelopment())
-                          {
-                              StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
-                          }
-                      });
-                      builder.UseContentRoot(Directory.GetCurrentDirectory());
-                      builder.UseKestrel((context, options) => { options.Configure(context.Configuration.GetSection("Kestrel")); });
-                      builder.UseStartup<Startup>();
-                  });
+                   {
+                       builder.ConfigureAppConfiguration((ctx, cb) =>
+                       {
+                           if (ctx.HostingEnvironment.IsDevelopment())
+                           {
+                               StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
+                           }
+                       });
+                       builder.UseContentRoot(Directory.GetCurrentDirectory());
+                       builder.UseKestrel((context, options) => { options.Configure(context.Configuration.GetSection("Kestrel")); });
+                       builder.UseStartup<Startup>();
+                   });
         }
     }
 }
