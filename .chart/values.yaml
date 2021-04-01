@@ -1,0 +1,28 @@
+replicaCount: 1
+
+image:
+  repository: devtds.azurecr.io/philips-api
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets:
+  - name: regcred
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  externalPort: 80
+  internalPort: 5000
+
+livenessProbe:
+  path: "/health/liveness"
+  scheme: "HTTP"
+readinessProbe:
+  path: "/health/readiness"
+  scheme: "HTTP"
+
+ingress:
+  enabled: true
+  host: kubernetes.docker.internal
+  path: /philips-api

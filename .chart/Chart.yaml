@@ -1,0 +1,4 @@
+apiVersion: v2
+name: philips-demo
+type: application
+version: 0.1.1

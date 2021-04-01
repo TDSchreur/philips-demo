@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-deployment
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: {{ .Chart.Name }}
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+          livenessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+            httpGet:
+              path: {{ .Values.livenessProbe.path }}
+              scheme: {{ .Values.livenessProbe.scheme }}
+              port: {{ .Values.service.internalPort }}
+          readinessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 30
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              scheme: {{ .Values.readinessProbe.scheme }}
+              port: {{ .Values.service.internalPort }}
