@@ -1,50 +1,54 @@
 trigger:
-- master
+  - master
 
 resources:
-- repo: self
+  - repo: self
 
 variables:
-  # Container registry service connection established during pipeline creation
-  registryServiceConnection: 'acr-dtd'
-  imageRepository: 'philips-api'
-  containerRegistry: 'devtds.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  tag: '$(Build.BuildId)'
+  k8sServiceConnection: "local-k8s"
+  k8sNamespace: "philips"
+  k8sReleasename: "philips-demo-deployment"
+  registryServiceConnection: "acr-dtd"
+  imageRepository: "philips-api"
+  containerRegistry: "devtds.azurecr.io"
+  dockerfilePath: "$(Build.SourcesDirectory)/Dockerfile"
+  chartfilePath: "$(Build.SourcesDirectory)/.chart"
+  tag: "$(Build.BuildId)"
   pool: Default
 
 stages:
-- stage: Build
-  displayName: Build and push image
-  jobs:
-  - job: Build
-    displayName: Build
-    pool: $(pool)
-    steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(registryServiceConnection)
-        tags: |
-          $(tag)
-- stage: Deploy
-  displayName: Deploy to local k8s cluster
-  jobs:
-    - job: Deploy
-      displayName: Deploy
-      pool: $(pool)
-      steps:
-      - task: HelmDeploy@0
-        displayName: "Helm Deploy"
-        inputs:
-          connectionType: Kubernetes Service Connection
-          kubernetesServiceEndpoint: local-k8s
-          command: upgrade
-          install: true
-          releaseName: philips-demo-deployment
-          chartType: FilePath
-          chartPath: .chart
-          overrideValues: image.tag=$(tag)
+  - stage: Build
+    displayName: Build and push image
+    jobs:
+      - job: Build
+        displayName: Build
+        pool: $(pool)
+        steps:
+          - task: Docker@2
+            displayName: Build and push an image to container registry
+            inputs:
+              command: buildAndPush
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(registryServiceConnection)
+              tags: |
+                $(tag)
+  - stage: Deploy
+    displayName: Deploy to local k8s cluster
+    jobs:
+      - job: Deploy
+        displayName: Deploy
+        pool: $(pool)
+        steps:
+          - task: HelmDeploy@0
+            displayName: "Helm Deploy"
+            inputs:
+              connectionType: Kubernetes Service Connection
+              kubernetesServiceEndpoint: $(k8sServiceConnection)
+              command: upgrade
+              install: true
+              namespace: $(k8sNamespace)
+              releaseName: $(k8sReleasename)
+              chartType: FilePath
+              chartPath: $(chartfilePath)
+              overrideValues: image.tag=$(tag)
