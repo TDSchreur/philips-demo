@@ -60,11 +60,13 @@ namespace Api
                                           .Enrich.FromLogContext()
                                           .MinimumLevel.Information();
 
-                       loggerBuilder.MinimumLevel.Debug()
-                                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                                    .MinimumLevel.Override("System", LogEventLevel.Warning)
+                       loggerBuilder.Enrich.WithMachineName()
+                                    .Enrich.WithEnvironmentName()
+                                    .MinimumLevel.Debug()
+                                    //.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                                    //.MinimumLevel.Override("System", LogEventLevel.Warning)
                                     .WriteTo.Console(outputTemplate:
-                                                     "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
+                                                     "[{Timestamp:HH:mm:ss} {Level} {EnvironmentName}-{MachineName}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
                                                      theme: AnsiConsoleTheme.Literate);
 
                        builder.AddSerilog(loggerBuilder.CreateLogger());
