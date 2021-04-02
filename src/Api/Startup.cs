@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +27,12 @@ namespace Api
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health/readiness");
+
+                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions { Predicate = _ => false });
+            });
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
@@ -37,6 +43,8 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddHealthChecks();
         }
     }
 }
