@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Chart.Name }}-deployment
 spec:
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
