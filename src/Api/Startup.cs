@@ -36,7 +36,7 @@ namespace Api
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-            app.Run(async context => { await context.Response.WriteAsync($"Demo: Hello World!!! Request path: {context.Request.Path}"); });
+            app.Run(async context => { await context.Response.WriteAsync($"Demo: Hello World! Request path: {context.Request.Path}"); });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
