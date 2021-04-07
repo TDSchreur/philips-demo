@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -31,12 +32,15 @@ namespace Api
             {
                 endpoints.MapHealthChecks("/health/readiness");
 
-                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions { Predicate = _ => false });
+                endpoints.MapHealthChecks("/health/liveness", new HealthCheckOptions {Predicate = _ => false});
             });
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-            app.Run(async context => { await context.Response.WriteAsync($"Demo: Hello World! Request path: {context.Request.Path}"); });
+            // komt via een configmap
+            var helloText = Configuration.GetValue<string>("helloText") ?? "config not found";
+
+            app.Run(async context => { await context.Response.WriteAsync($"{Environment.MachineName}: {helloText} Request path: {context.Request.Path}"); });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
